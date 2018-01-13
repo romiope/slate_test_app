@@ -1,1 +1,1 @@
-# slate_test_app
+# Slate Geofence test task 
