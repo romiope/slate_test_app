@@ -13,4 +13,8 @@
     <string name="radius">Radius</string>
     <string name="reject">Reject</string>
     <string name="add_new_geofence">Add new Geofence</string>
+    <string name="wrong_ssid">WRONG SSID</string>
+    <string name="wrong_latitude">WRONG LATITUDE</string>
+    <string name="wrong_logitude">WRONG LONGITUDE</string>
+    <string name="wrong_radius"><![CDATA[RADIUS < 0 or > 30]]></string>
 </resources>
