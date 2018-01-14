@@ -21,19 +21,24 @@ import android.support.design.widget.Snackbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.activity_maps.*
+import slate.com.slatetestapp.repository.GeofenceDao
+import slate.com.slatetestapp.repository.entity.LocalGeofence
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.AddgeofenceListener {
     companion object {
         private const val LOCATION_PERMISSIONS_REQUEST = 101
         private const val GOOGLE_API_AVAILABILITY_REQUEST = 101
     }
 
+    private val geofenceList = mutableListOf<Geofence>()
     private var map: GoogleMap? = null
+    private lateinit var geofenceDao: GeofenceDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +46,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         setSupportActionBar(app_toolbar)
         app_toolbar.title
+
+        geofenceDao = (application as App).database.geofenceDao()
+
+        add_floating_action_btn.setOnClickListener {
+            addGeofence()
+        }
 
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map_fragment) as SupportMapFragment
@@ -83,10 +94,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_add ->
+            R.id.action_profile -> {
+                geofenceDao.clean()
                 true
-            R.id.action_profile ->
-                true
+            }
             else ->
                 super.onOptionsItemSelected(item)
         }
@@ -107,6 +118,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    override fun addGeofence(localGeofence: LocalGeofence) {
+        geofenceDao.insert(localGeofence)
+    }
+
+    private fun addGeofence() {
+        val fragment = (supportFragmentManager.findFragmentByTag(AddGeofenceDialog.ADD_GEOFENCE_DIALOG_TAG) ?: AddGeofenceDialog())
+        supportFragmentManager.beginTransaction()
+                .add(fragment, AddGeofenceDialog.ADD_GEOFENCE_DIALOG_TAG)
+                .commit()
     }
 
     private fun requestPermissionAccesFineLocaction() {

@@ -7,4 +7,10 @@
     <string name="i_am_here">I am here</string>
     <string name="clear">Clear</string>
     <string name="add">Add</string>
+    <string name="ssid">SSID</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="radius">Radius</string>
+    <string name="reject">Reject</string>
+    <string name="add_new_geofence">Add new Geofence</string>
 </resources>
