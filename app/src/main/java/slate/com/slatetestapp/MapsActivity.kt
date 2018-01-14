@@ -1,9 +1,11 @@
 package slate.com.slatetestapp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -17,6 +19,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import android.support.design.widget.Snackbar
 import android.view.View
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -25,7 +30,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val GOOGLE_API_AVAILABILITY_REQUEST = 101
     }
 
-    private lateinit var map: GoogleMap
+    private var map: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,10 +68,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-
-//        val sydney = LatLng(-34.0, 151.0)
-//        map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -103,8 +104,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun onLocationPermissionGranted() {
         LocationServices.getFusedLocationProviderClient(this)
+                .lastLocation.addOnSuccessListener { location: Location? ->
+            location?.let {
+                map?.apply {
+                    val myLocation = LatLng(location.latitude, location.longitude)
+                    val markerOptions = MarkerOptions()
+                            .position(myLocation)
+                            .title(getString(R.string.i_am_here))
+                    addMarker(markerOptions)
+                    moveCamera(CameraUpdateFactory.newLatLng(myLocation))
+                }
+            }
+        }
     }
 
     private fun onError(text: String, onRetry: (View) -> Unit) {
