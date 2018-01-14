@@ -3,6 +3,7 @@ package slate.com.slatetestapp
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -14,10 +15,12 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import android.support.design.widget.Snackbar
+import android.view.View
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object {
-        private const val TAG = "MapsActivity"
         private const val LOCATION_PERMISSIONS_REQUEST = 101
         private const val GOOGLE_API_AVAILABILITY_REQUEST = 101
     }
@@ -51,7 +54,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GOOGLE_API_AVAILABILITY_REQUEST) {
             if (resultCode != ConnectionResult.SUCCESS) {
-                onError()
+                onError(getString(R.string.google_api_is_not_available)) {
+                    checkAvailabilityOfPlayServices()
+                }
             }
         }
     }
@@ -71,7 +76,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     onLocationPermissionGranted()
                 } else {
-                    onError()
+                    onError(getString(R.string.location_permission_denied)) {
+                        ActivityCompat.requestPermissions(this,
+                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                LOCATION_PERMISSIONS_REQUEST)
+                    }
                 }
             }
         }
@@ -81,9 +90,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    LOCATION_PERMISSIONS_REQUEST)
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        LOCATION_PERMISSIONS_REQUEST)
+            }
         } else {
             onLocationPermissionGranted()
         }
@@ -93,7 +107,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         LocationServices.getFusedLocationProviderClient(this)
     }
 
-    private fun onError() {
-        TODO("not implemented")
+    private fun onError(text: String, onRetry: (View) -> Unit) {
+        Snackbar.make(findViewById(R.id.coordinator_container), text, Snackbar.LENGTH_INDEFINITE).apply {
+            setAction(getString(R.string.retry), onRetry)
+            setActionTextColor(Color.RED)
+            show()
+        }
     }
 }

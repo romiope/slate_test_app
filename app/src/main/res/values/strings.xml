@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">SlateTestApp</string>
     <string name="title_activity_maps">Map</string>
+    <string name="google_api_is_not_available">Google API is not available</string>
+    <string name="retry">RETRY</string>
+    <string name="location_permission_denied">Location permission denied</string>
 </resources>
