@@ -5,4 +5,6 @@
     <string name="retry">RETRY</string>
     <string name="location_permission_denied">Location permission denied</string>
     <string name="i_am_here">I am here</string>
+    <string name="clear">Clear</string>
+    <string name="add">Add</string>
 </resources>
