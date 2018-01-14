@@ -54,7 +54,7 @@ class AddGeofenceDialog : DialogFragment() {
 
                 val radiusString = radius_ev.text.toString()
                 val radius = if (radiusString.isNullOrBlank()) -1 else Integer.parseInt(radiusString)
-                if (radius < 0 || radius > 30) {
+                if (radius <= 0 || radius > 30) {
                     Toast.makeText(context, context.getString(R.string.wrong_radius), Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
