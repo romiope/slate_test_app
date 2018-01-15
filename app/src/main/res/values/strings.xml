@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SlateTestApp</string>
+    <string name="app_name">Region tracker</string>
     <string name="title_activity_maps">Map</string>
     <string name="google_api_is_not_available">Google API is not available</string>
     <string name="retry">RETRY</string>
@@ -10,11 +10,17 @@
     <string name="ssid">SSID</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
-    <string name="radius">Radius</string>
+    <string name="radius">Radius in meters</string>
     <string name="reject">Reject</string>
     <string name="add_new_geofence">Add new Geofence</string>
     <string name="wrong_ssid">WRONG SSID</string>
     <string name="wrong_latitude">WRONG LATITUDE</string>
     <string name="wrong_logitude">WRONG LONGITUDE</string>
-    <string name="wrong_radius"><![CDATA[RADIUS < 0 or > 30]]></string>
+    <string name="wrong_radius"><![CDATA[RADIUS < 100 or > 30000]]></string>
+    <string name="geofence_add_error">Geofence add error</string>
+    <string name="geofence_added">Geofences added</string>
+    <string name="geofence_remove_error">Geofence remove error</string>
+    <string name="geofence_removed">Geofences removed</string>
+    <string name="too_many_geofences">Too many Geofences</string>
+    <string name="cleanup">Cleanup</string>
 </resources>

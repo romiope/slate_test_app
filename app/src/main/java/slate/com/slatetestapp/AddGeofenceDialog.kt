@@ -23,7 +23,7 @@ class AddGeofenceDialog : DialogFragment() {
     private var callback: AddgeofenceListener? = null
 
     interface AddgeofenceListener {
-        fun addGeofence(localGeofence: LocalGeofence)
+        fun onNewGeofence(localGeofence: LocalGeofence)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?)
@@ -53,13 +53,13 @@ class AddGeofenceDialog : DialogFragment() {
                 }
 
                 val radiusString = radius_ev.text.toString()
-                val radius = if (radiusString.isNullOrBlank()) -1 else Integer.parseInt(radiusString)
-                if (radius <= 0 || radius > 30) {
+                val radius = if (radiusString.isNullOrBlank()) (-1).toFloat() else Integer.parseInt(radiusString).toFloat()
+                if (radius <= 99 || radius > 30000) {
                     Toast.makeText(context, context.getString(R.string.wrong_radius), Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
 
-                callback?.addGeofence(LocalGeofence(ssid, latitudeStr.toDouble(), longitudeStr.toDouble(), radius))
+                callback?.onNewGeofence(LocalGeofence(ssid.trim(), latitudeStr.toDouble(), longitudeStr.toDouble(), radius))
                 dismiss()
             }
 

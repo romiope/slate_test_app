@@ -19,4 +19,7 @@ interface GeofenceDao {
 
     @Query("DELETE FROM LocalGeofence")
     fun clean()
+
+    @Query("SELECT COUNT(*) FROM LocalGeofence")
+    fun count(): Int
 }

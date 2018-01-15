@@ -18,13 +18,27 @@
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
 
-        <fragment
-            xmlns:map="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/map_fragment"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context="slate.com.slatetestapp.MapsActivity" />
+            android:layout_height="match_parent">
+
+            <fragment
+                android:id="@+id/map_fragment"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="slate.com.slatetestapp.MapsActivity" />
+
+            <View
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="20dp"
+                android:id="@+id/indicator_view"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/circle"
+                android:visibility="invisible"/>
+
+        </FrameLayout>
 
     </LinearLayout>
 

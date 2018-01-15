@@ -1,14 +1,14 @@
 package slate.com.slatetestapp
 
 import android.app.Application
-import android.arch.persistence.room.Room
-import slate.com.slatetestapp.repository.AppDatabase
+import slate.com.slatetestapp.repository.Repository
 
 class App: Application() {
-    lateinit var database: AppDatabase
+
+    lateinit var repository : Repository
 
     override fun onCreate() {
         super.onCreate()
-        database = Room.databaseBuilder(applicationContext, AppDatabase::class.java,"database").build()
+        repository = Repository(applicationContext)
     }
 }
