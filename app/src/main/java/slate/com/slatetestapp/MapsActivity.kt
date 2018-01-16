@@ -220,7 +220,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
 
         val wifiInfo = wifiManager.connectionInfo
         if (idsInArea.isNotEmpty() || wifiInfo.supplicantState == SupplicantState.COMPLETED
-                && repository.selectAll().any { it.SSID == wifiInfo.ssid }) {
+                && repository.selectAll().any { "\"${it.SSID}\"" == wifiInfo.ssid }) {
             indicator_view.visibility = View.VISIBLE
         } else {
             indicator_view.visibility = View.INVISIBLE
