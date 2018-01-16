@@ -10,12 +10,12 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
+import android.net.ConnectivityManager
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
@@ -79,9 +79,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
                 try {
                     LocalBroadcastManager.getInstance(applicationContext)
                             .unregisterReceiver(this)
-                } catch (e: Exception) {
-
-                }
+                } catch (e: Exception) {}
             }
 
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -97,6 +95,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
                 }
             }
         }
+    }
+
+    private val connectivityChanged by lazy { object : BroadcastReceiver() {
+        private val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+
+        fun subscribe()
+                = applicationContext.registerReceiver(this, filter)
+
+        fun unsubscribe() {
+            try {
+                applicationContext.unregisterReceiver(this)
+            } catch (e: Exception) {}
+        }
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent?.let {
+                updateIsInAreaIndicator()
+            }
+        }
+    }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,15 +147,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
 
     override fun onResume() {
         super.onResume()
-        isInRegionReceiver.subscribe()
+        connectivityChanged.subscribe()
         checkAvailabilityOfPlayServices()
         requestPermissionAccesFineLocaction()
         updateIsInAreaIndicator()
     }
 
     override fun onPause() {
-        isInRegionReceiver.unsubscribe()
         super.onPause()
+        connectivityChanged.unsubscribe()
+    }
+
+    override fun onDestroy() {
+        isInRegionReceiver.unsubscribe()
+        super.onDestroy()
     }
 
     private fun checkAvailabilityOfPlayServices() {
@@ -213,6 +236,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
         repository.insert(localGeofence)
         addGeofence(localGeofence.toGeofence())
         drawGeofenceOnMap(localGeofence)
+        updateIsInAreaIndicator()
     }
 
     private fun updateIsInAreaIndicator() {
