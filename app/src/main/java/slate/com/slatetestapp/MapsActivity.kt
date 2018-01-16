@@ -93,15 +93,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
                     } else {
                         idsInArea.removeAll(geofenceIds)
                     }
-                    val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-
-                    val wifiInfo = wifiManager.connectionInfo
-                    if (idsInArea.isEmpty() && wifiInfo.supplicantState == SupplicantState.COMPLETED
-                            && repository.selectAll().any { it.SSID == wifiInfo.ssid }) {
-                        indicator_view.visibility = View.VISIBLE
-                    } else {
-                        indicator_view.visibility = View.INVISIBLE
-                    }
+                    updateIsInAreaIndicator()
                 }
             }
         }
@@ -113,6 +105,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
 
         setSupportActionBar(app_toolbar)
 
+        isInRegionReceiver.subscribe()
         geofencingClient = LocationServices.getGeofencingClient(this)
 
         add_floating_action_btn.setOnClickListener {
@@ -125,7 +118,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
                     show()
                 }
             } else {
-                showNewGeofenceDialog()
+                AddGeofenceDialog().show(supportFragmentManager)
             }
         }
 
@@ -139,6 +132,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
         isInRegionReceiver.subscribe()
         checkAvailabilityOfPlayServices()
         requestPermissionAccesFineLocaction()
+        updateIsInAreaIndicator()
     }
 
     override fun onPause() {
@@ -190,6 +184,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
             R.id.action_profile -> {
                 stopTracking()
                 repository.clean()
+                idsInArea.clear()
+                updateIsInAreaIndicator()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -217,6 +213,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
         repository.insert(localGeofence)
         addGeofence(localGeofence.toGeofence())
         drawGeofenceOnMap(localGeofence)
+    }
+
+    private fun updateIsInAreaIndicator() {
+        val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        val wifiInfo = wifiManager.connectionInfo
+        if (idsInArea.isNotEmpty() || wifiInfo.supplicantState == SupplicantState.COMPLETED
+                && repository.selectAll().any { it.SSID == wifiInfo.ssid }) {
+            indicator_view.visibility = View.VISIBLE
+        } else {
+            indicator_view.visibility = View.INVISIBLE
+        }
     }
 
     private fun startTracking() {
@@ -253,20 +261,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AddGeofenceDialog.
                 .addOnFailureListener {
                     toast(getString(R.string.geofence_add_error))
                 }
-    }
-
-    private fun showNewGeofenceDialog() {
-        val fragmentFromManager: Fragment? = supportFragmentManager.findFragmentByTag(AddGeofenceDialog.ADD_GEOFENCE_DIALOG_TAG)
-
-        supportFragmentManager
-                .beginTransaction()
-                .remove(fragmentFromManager)
-                .commitNow()
-
-        val fragment = (fragmentFromManager
-                ?: AddGeofenceDialog()) as AddGeofenceDialog
-
-        fragment.show(supportFragmentManager, AddGeofenceDialog.ADD_GEOFENCE_DIALOG_TAG)
     }
 
     private fun requestPermissionAccesFineLocaction() {

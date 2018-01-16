@@ -3,12 +3,14 @@ package slate.com.slatetestapp
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.support.v4.app.FragmentManager
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_add_geofance.view.*
 import slate.com.slatetestapp.repository.entity.LocalGeofence
+import java.lang.Exception
 import java.util.regex.Pattern
 
 
@@ -20,6 +22,7 @@ class AddGeofenceDialog : DialogFragment() {
         const val LONGITUDE_REGEXP = "^(\\+|-)?(?:180(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\\.[0-9]{1,6})?))\$"
     }
 
+    private var wasLaunched = false
     private var callback: AddgeofenceListener? = null
 
     interface AddgeofenceListener {
@@ -67,6 +70,31 @@ class AddGeofenceDialog : DialogFragment() {
                 dismiss()
             }
         }
+
+    override fun onStart() {
+        super.onStart()
+        wasLaunched = true
+    }
+
+
+    override fun onStop() {
+        wasLaunched = false
+        super.onStop()
+    }
+
+    override fun dismiss() {
+        if (wasLaunched) {
+            super.dismiss()
+        }
+    }
+
+    fun show(manager: FragmentManager) {
+        if (!wasLaunched) {
+            try {
+                super.show(manager, AddGeofenceDialog::class.java.simpleName)
+            } catch (e: Exception) { }
+        }
+    }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)

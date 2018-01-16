@@ -2,6 +2,7 @@ package slate.com.slatetestapp
 
 import android.app.IntentService
 import android.content.Intent
+import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
@@ -36,7 +37,7 @@ class GeofenceTransitionsIntentService : IntentService(TAG) {
             val geofenceTransition = geofencingEvent.geofenceTransition
             val status = when(geofenceTransition) {
                 Geofence.GEOFENCE_TRANSITION_DWELL -> true
-                Geofence.GEOFENCE_TRANSITION_ENTER -> false
+                Geofence.GEOFENCE_TRANSITION_ENTER -> true
                 Geofence.GEOFENCE_TRANSITION_EXIT -> false
                 else -> false
             }
@@ -45,7 +46,9 @@ class GeofenceTransitionsIntentService : IntentService(TAG) {
             putStringArrayListExtra(GEOFENCING_IDS, ArrayList(geofencingEvent.triggeringGeofences.map {
                 it.requestId
             }))
-            sendBroadcast(this)
+            LocalBroadcastManager
+                    .getInstance(applicationContext)
+                    .sendBroadcast(this)
         }
     }
 }
