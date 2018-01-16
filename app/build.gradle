@@ -15,7 +15,6 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = ["room.schemaLocation":
@@ -41,5 +40,5 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
     compile 'android.arch.persistence.room:runtime:1.0.0'
-    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
+    kapt "android.arch.persistence.room:compiler:1.0.0"
 }
